@@ -20,6 +20,11 @@ cat > /etc/docker/daemon.json <<EOF
 EOF
 mkdir -p /etc/systemd/system/docker.service.d
 
+# Make sure kubelet communicates over the interface we specified in the Vagrantfile
+cat > /etc/default/kubelet <<EOF
+KUBELET_EXTRA_ARGS=--node-ip=${NODE_IP}
+EOF
+
 # Restart docker.
 systemctl daemon-reload
 systemctl restart docker
@@ -29,6 +34,7 @@ systemctl enable docker
 
 docker info | grep -i "storage"
 docker info | grep -i "cgroup"
+
 
 systemctl enable kubelet && systemctl start kubelet
 
